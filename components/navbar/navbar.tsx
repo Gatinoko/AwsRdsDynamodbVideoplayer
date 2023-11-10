@@ -38,6 +38,7 @@ export default function Navbar({ jwtToken }: NavigationProps) {
 		await fetch('http://localhost:3000/api/auth', {
 			method: 'DELETE',
 		});
+		router.push('/login');
 		router.refresh();
 	}
 
@@ -63,18 +64,16 @@ export default function Navbar({ jwtToken }: NavigationProps) {
 				className='flex gap-4'>
 				{jwtToken ? (
 					<>
-						{/* Search input */}
-						<NavbarItem className='hidden lg:flex'>
-							<div className='flex items-center gap-2'>
-								<FontAwesomeIcon
-									size='lg'
-									icon={faMagnifyingGlass}
-								/>
-								<Input
-									className='border rounded-xl'
-									placeholder='Salads, bean soup...'
-								/>
-							</div>
+						{/* Logout button */}
+						<NavbarItem
+							key='logout'
+							onClick={logoutButtonHandler}>
+							<Button
+								as={Link}
+								href='/upload-video'
+								variant='flat'>
+								Upload
+							</Button>
 						</NavbarItem>
 
 						{/* Avatar with dropdown menu */}
