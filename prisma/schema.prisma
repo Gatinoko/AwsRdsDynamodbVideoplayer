@@ -16,4 +16,11 @@ model User {
   email String @unique
   username String @unique
   password String
+  videos Video[]
+}
+
+model Video {
+  videoId String @id
+  userId String
+  user User @relation(fields: [userId], references: [id])
 }
