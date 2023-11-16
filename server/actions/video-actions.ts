@@ -11,7 +11,11 @@ import {
 	TABLE_NAME,
 } from '@/aws/aws-config';
 import { randomUUID } from 'crypto';
-import { PutCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
+import {
+	DeleteCommand,
+	PutCommand,
+	UpdateCommand,
+} from '@aws-sdk/lib-dynamodb';
 
 /**
  * Server action for the video upload form.
@@ -20,6 +24,8 @@ import { PutCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
  * @param {string} username - User which initiated the upload action.
  */
 export async function uploadVideo(data: FormData, username: string) {
+	// TODO: ERROR HANDLING
+
 	// Assigns form values to object
 	const formValues = {
 		file: data.get('file'),
@@ -94,4 +100,32 @@ export async function uploadVideo(data: FormData, username: string) {
 
 	// Redirects user to login page
 	redirect('/login');
+}
+
+/**
+ * Server action for `VideoItem`'s delete video button
+ *
+ * @param {string} videoId - Id of the video to be deleted.
+ * @param {string} userId - User which initiated the delete action.
+ */
+export async function deleteVideo(videoId: string, userId: string) {
+	// TODO: ERROR HANDLING
+
+	// Sends update query to mySql
+	await prismaClient().video.delete({
+		where: {
+			videoId: videoId,
+		},
+	});
+
+	// Sends delete query to Videos Dynamodb table
+	await DB_CLIENT.send(
+		new DeleteCommand({
+			TableName: TABLE_NAME,
+			Key: {
+				videoId: videoId,
+			},
+			// ReturnValues: 'ALL_OLD',
+		})
+	);
 }

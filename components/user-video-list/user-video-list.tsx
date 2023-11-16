@@ -3,22 +3,10 @@
 import jwt from 'jsonwebtoken';
 import prismaClient from '@/prisma/prisma';
 import { cookies } from 'next/headers';
-import { Button, ButtonProps } from '@nextui-org/react';
 import VideoList from './video-list/video-list';
-// import { createPresigned } from '@/aws/aws-utils';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { BUCKET_NAME, S3_CLIENT } from '@/aws/aws-config';
-import { GetObjectCommand } from '@aws-sdk/client-s3';
-
-async function createPresigned(key: string) {
-	'use server';
-
-	return await getSignedUrl(
-		S3_CLIENT,
-		new GetObjectCommand({ Bucket: BUCKET_NAME, Key: key }),
-		{ expiresIn: 3600 }
-	);
-}
+import { DB_CLIENT, TABLE_NAME } from '@/aws/aws-config';
+import { GetCommand } from '@aws-sdk/lib-dynamodb';
+import { createPresigned } from '@/aws/aws-utils';
 
 export type UserVideoListProps = {};
 
@@ -38,30 +26,33 @@ export default async function UserVideoList(props: UserVideoListProps) {
 		})
 	)?.videos!;
 
-	const userVideosWithSource: unknown = userVideos.map(
-		async (video, index, array) => {
-			const userVideosWithSource = {
-				...video,
-				source: await createPresigned(video.videoId),
-			};
-		}
-	);
+	const userVideosWithSource = await (async () => {
+		let userVideosWithInformation = [];
+		for (const video of userVideos) {
+			// Generates video's presigned URL
+			const presignedUrl = await createPresigned(video.videoId);
 
-	return (
-		<>
-			{/* Video list */}
-			<VideoList
-				userVideos={userVideos}
-				videoSource={createPresigned}
-				deleteButton={
-					<Button
-						onClick={() => {
-							console.log('delete action');
-						}}>
-						Delete
-					</Button>
-				}
-			/>
-		</>
-	);
+			// Video information stored in Dynamodb
+			const { Item } = await DB_CLIENT.send(
+				new GetCommand({
+					TableName: TABLE_NAME,
+					Key: {
+						videoId: video.videoId,
+					},
+				})
+			);
+
+			// Pushes item to new array
+			userVideosWithInformation.push({
+				...video,
+				videoTitle: Item?.videoTitle,
+				fileTitle: Item?.fileTitle,
+				fileSize: Item?.fileSize,
+				source: presignedUrl,
+			});
+		}
+		return userVideosWithInformation;
+	})();
+
+	return <VideoList userVideos={userVideosWithSource} />;
 }

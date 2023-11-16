@@ -1,32 +1,30 @@
 'use client';
 
-import { createPresigned } from '@/aws/aws-utils';
 import VideoItem from './video-item/video-item';
-import { Button, ButtonProps } from '@nextui-org/react';
-import { ReactElement } from 'react';
 
-export type UserVideoUploadList = {
+export type UserVideoUploadListProps = {
 	userVideos: {
 		videoId: string;
 		userId: string;
+		videoTitle: string;
+		fileTitle: string;
+		fileSize: string;
+		source: string;
 	}[];
-	videoSource: (key: string) => Promise<string>;
-	deleteButton: ReactElement<ButtonProps>;
 };
 
-export default function VideoList({
-	deleteButton,
-	videoSource,
-	userVideos,
-}: UserVideoUploadList) {
+export default function VideoList({ userVideos }: UserVideoUploadListProps) {
 	return (
 		<ul className='flex flex-col gap-2'>
 			{userVideos?.map((video, index) => (
 				<VideoItem
 					key={index}
-					id={video.videoId}
-					source={videoSource(video.videoId)}
-					deleteButton={deleteButton}
+					videoId={video.videoId}
+					userId={video.userId}
+					videoTitle={video.videoTitle}
+					fileTitle={video.fileTitle}
+					fileSize={video.fileSize}
+					source={video.source}
 				/>
 			))}
 		</ul>

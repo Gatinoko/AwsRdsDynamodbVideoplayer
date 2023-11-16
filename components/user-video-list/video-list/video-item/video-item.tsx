@@ -1,33 +1,34 @@
-'use server';
+'use client';
 
-import { DB_CLIENT, TABLE_NAME } from '@/aws/aws-config';
-import { GetCommand } from '@aws-sdk/lib-dynamodb';
-import { Button, ButtonProps, Input } from '@nextui-org/react';
-import { ReactElement } from 'react';
+import { deleteVideo } from '@/server/actions/video-actions';
+import { Button, Input } from '@nextui-org/react';
+import { useRouter } from 'next/navigation';
 
 export type VideoItemProps = {
-	id: string;
-	source: Promise<string>;
-	deleteButton: ReactElement<ButtonProps>;
+	videoId: string;
+	userId: string;
+	videoTitle: string;
+	fileTitle: string;
+	fileSize: string;
+	source: string;
 };
 
-export default async function VideoItem({
-	id,
+export default function VideoItem({
+	videoId,
+	userId,
+	videoTitle,
+	fileTitle,
+	fileSize,
 	source,
-	deleteButton,
 }: VideoItemProps) {
-	// S3 presigned url that allows access to the video temporarily
-	const presignedUrl = await source;
+	// Router
+	const router = useRouter();
 
-	// Video information stored in Dynamodb
-	const { Item } = await DB_CLIENT.send(
-		new GetCommand({
-			TableName: TABLE_NAME,
-			Key: {
-				videoId: id,
-			},
-		})
-	);
+	// Upload video form handler function
+	async function deleteVideoButtonHandler() {
+		await deleteVideo(videoId, userId);
+		router.refresh();
+	}
 
 	return (
 		<li className='bg-slate-200 p-4 rounded-2xl flex flex-col gap-2'>
@@ -38,11 +39,11 @@ export default async function VideoItem({
 					type='text'
 					label='Video Title'
 					name='videoTitle'
-					value={Item?.videoTitle}
+					value={videoTitle}
 					readOnly
 				/>
 
-				{deleteButton}
+				<Button onClick={deleteVideoButtonHandler}>Delete</Button>
 			</div>
 
 			{/* Video id */}
@@ -51,7 +52,7 @@ export default async function VideoItem({
 				type='text'
 				label='Video Id'
 				name='id'
-				value={Item?.videoId}
+				value={videoId}
 				readOnly
 			/>
 
@@ -62,7 +63,7 @@ export default async function VideoItem({
 					type='text'
 					label='File Title'
 					name='fileTitle'
-					value={Item?.fileTitle}
+					value={fileTitle}
 					readOnly
 				/>
 
@@ -71,19 +72,18 @@ export default async function VideoItem({
 					type='text'
 					label='File Size'
 					name='fileSize'
-					value={Item?.fileSize}
+					value={fileSize}
 					readOnly
 				/>
 			</div>
 
 			{/* Video HTML element */}
-			{presignedUrl && (
-				<video
-					controls
-					className='h-80 w-full rounded-2xl'>
-					<source src={presignedUrl} />
-				</video>
-			)}
+			<video
+				key={source}
+				controls
+				className='h-80 w-full rounded-2xl'>
+				<source src={source} />
+			</video>
 		</li>
 	);
 }

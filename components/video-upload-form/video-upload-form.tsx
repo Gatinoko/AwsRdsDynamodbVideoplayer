@@ -25,13 +25,7 @@ export default function VideoUploadForm() {
 			formData,
 			authInformation.username!
 		);
-		console.log(serverResponse);
-		// if (serverResponse) setErrorMessage(serverResponse.message);
-		// else {
-		// 	formElementRef.current?.reset();
-		// 	setErrorMessage('‎ ');
-		// 	router.refresh();
-		// }
+		router.refresh();
 	}
 
 	return (
