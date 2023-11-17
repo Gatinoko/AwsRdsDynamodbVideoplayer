@@ -42,10 +42,23 @@ export default async function UserVideoList(props: UserVideoListProps) {
 				})
 			);
 
+			// Gets a video's comments from mySql
+			const videoComments = (
+				await prismaClient().video.findUnique({
+					where: {
+						videoId: video.videoId,
+					},
+					include: {
+						comments: true,
+					},
+				})
+			)?.comments!;
+
 			// Pushes item to new array
 			userVideosWithInformation.push({
 				...video,
 				videoTitle: Item?.videoTitle,
+				videoComments: videoComments,
 				fileTitle: Item?.fileTitle,
 				fileSize: Item?.fileSize,
 				source: presignedUrl,

@@ -30,14 +30,13 @@ export async function uploadVideo(data: FormData, username: string) {
 	const formValues = {
 		file: data.get('file'),
 		videoTitle: data.get('videoTitle'),
-		username: username,
 	} as { file: File; videoTitle: string; username: string };
 
 	// New object's unique UUID
 	const newVideoUploadUUID = randomUUID();
 
 	// Data stream buffer with file contents
-	const newVideoUpload = new Upload({
+	const newVideoUpload = await new Upload({
 		client: S3_CLIENT,
 		params: {
 			Bucket: BUCKET_NAME,
@@ -45,18 +44,8 @@ export async function uploadVideo(data: FormData, username: string) {
 			Body: formValues.file.stream(),
 			ContentType: 'video/mp4',
 		},
-	});
-
-	// Log progress
-	newVideoUpload.on('httpUploadProgress', (progress) => {
-		console.log(progress);
-	});
-
-	// Finish upload process
-	const newVideoUploadResponse = await newVideoUpload.done();
-
-	// Checks if the upload is successful
-	if (!('Location' in newVideoUploadResponse))
+	}).done();
+	if (!('Location' in newVideoUpload))
 		throw new Error('Error uploading the file.', {
 			cause: 'FILE_UPLOAD_ERROR',
 		});

@@ -17,10 +17,21 @@ model User {
   username String @unique
   password String
   videos Video[]
+  comments Comment[]
 }
 
 model Video {
   videoId String @id
   userId String
   user User @relation(fields: [userId], references: [id])
+  comments Comment[]
+}
+
+model Comment {
+  commentId String @id
+  comment String
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  videoId String
+  video Video @relation(fields: [videoId], references: [videoId])
 }
