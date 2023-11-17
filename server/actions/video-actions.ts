@@ -118,3 +118,47 @@ export async function deleteVideo(videoId: string, userId: string) {
 		})
 	);
 }
+
+/**
+ * Server action for `RatingSlider`'s slider
+ *
+ * @param {string} videoId - Id of the video to be rated.
+ * @param {string} userId - User which initiated the rating action.
+ * @param {string} ratingValue - The selected value.
+ */
+export async function rateVideo(
+	videoId: string,
+	userId: string,
+	ratingValue: number
+) {
+	// TODO: ERROR HANDLING
+
+	// Checks database if user already has a rating in the respective video
+	const userRating = await prismaClient().videoRating.findUnique({
+		where: {
+			videoId: videoId,
+			userId: userId,
+		},
+	});
+
+	// If rating already exists, send update operation, otherwise send create operation
+	if (userRating) {
+		await prismaClient().videoRating.update({
+			where: {
+				videoId: videoId,
+				userId: userId,
+			},
+			data: {
+				value: ratingValue,
+			},
+		});
+	} else {
+		await prismaClient().videoRating.create({
+			data: {
+				videoId: videoId,
+				userId: userId,
+				value: ratingValue,
+			},
+		});
+	}
+}

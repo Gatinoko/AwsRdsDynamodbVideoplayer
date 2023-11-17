@@ -18,6 +18,16 @@ model User {
   password String
   videos Video[]
   comments Comment[]
+  userVideoRatings VideoRating[]
+}
+
+model VideoRating {
+  ratingId String @id @default(uuid())
+  videoId String @unique
+  video Video @relation(fields: [videoId], references: [videoId])
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  value Int
 }
 
 model Video {
@@ -25,6 +35,7 @@ model Video {
   userId String
   user User @relation(fields: [userId], references: [id])
   comments Comment[]
+  videoRatings VideoRating[]
 }
 
 model Comment {

@@ -1,11 +1,11 @@
 'use client';
 
 import CommentList from '@/components/comment-list/comment-list';
+import RatingSlider from '@/components/rating-slider/rating-slider';
 import { postComment } from '@/server/actions/comment-actions';
 import { deleteVideo } from '@/server/actions/video-actions';
-import { Button, Input, Textarea } from '@nextui-org/react';
+import { Button, Input, Slider, Textarea } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
-import { ReactElement } from 'react';
 
 export type VideoItemProps = {
 	videoId: string;
@@ -108,6 +108,12 @@ export default function VideoItem({
 				className='h-80 w-full rounded-2xl'>
 				<source src={source} />
 			</video>
+
+			{/* Rating slider */}
+			<RatingSlider
+				videoId={videoId}
+				userId={userId}
+			/>
 
 			{/* Comment form */}
 			<form
