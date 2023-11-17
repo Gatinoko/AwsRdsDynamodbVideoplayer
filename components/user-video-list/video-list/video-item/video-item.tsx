@@ -10,13 +10,20 @@ import { ReactElement } from 'react';
 export type VideoItemProps = {
 	videoId: string;
 	userId: string;
-	videoComments: {
+	videoComments: ({
+		user: {
+			id: string;
+			creationDate: Date;
+			email: string;
+			username: string;
+			password: string;
+		};
+	} & {
 		commentId: string;
 		comment: string;
 		userId: string;
-		username: string;
 		videoId: string;
-	}[];
+	})[];
 	videoTitle: string;
 	fileTitle: string;
 	fileSize: string;

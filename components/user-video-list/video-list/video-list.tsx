@@ -1,21 +1,26 @@
 'use client';
 
-import { ReactElement } from 'react';
 import VideoItem from './video-item/video-item';
-import CommentList from '@/components/comment-list/comment-list';
 
 export type UserVideoListProps = {
 	userVideos: {
 		videoId: string;
 		userId: string;
 		videoTitle: string;
-		videoComments: {
+		videoComments: ({
+			user: {
+				id: string;
+				creationDate: Date;
+				email: string;
+				username: string;
+				password: string;
+			};
+		} & {
 			commentId: string;
 			comment: string;
 			userId: string;
-			username: string;
 			videoId: string;
-		}[];
+		})[];
 		fileTitle: string;
 		fileSize: string;
 		source: string;

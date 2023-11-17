@@ -3,13 +3,20 @@
 import Comment from './comment/comment';
 
 export type CommentListProps = {
-	videoComments: {
+	videoComments: ({
+		user: {
+			id: string;
+			creationDate: Date;
+			email: string;
+			username: string;
+			password: string;
+		};
+	} & {
 		commentId: string;
 		comment: string;
 		userId: string;
-		username: string;
 		videoId: string;
-	}[];
+	})[];
 };
 
 export default function CommentList({ videoComments }: CommentListProps) {
@@ -25,7 +32,7 @@ export default function CommentList({ videoComments }: CommentListProps) {
 						key={index}
 						commentId={comment.commentId}
 						comment={comment.comment}
-						username={comment.username}
+						username={comment.user.username}
 						videoId={comment.videoId}
 					/>
 				))}

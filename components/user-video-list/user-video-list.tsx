@@ -49,7 +49,11 @@ export default async function UserVideoList(props: UserVideoListProps) {
 						videoId: video.videoId,
 					},
 					include: {
-						comments: true,
+						comments: {
+							include: {
+								user: true,
+							},
+						},
 					},
 				})
 			)?.comments!;
