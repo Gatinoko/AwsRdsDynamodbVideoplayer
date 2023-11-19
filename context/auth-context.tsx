@@ -5,6 +5,7 @@ export type AuthInformation = {
 	isAuthenticated: boolean;
 	email: undefined;
 	username: undefined;
+	id: undefined;
 };
 
 export const AuthContext = createContext({
@@ -12,6 +13,7 @@ export const AuthContext = createContext({
 		isAuthenticated: false,
 		email: undefined,
 		username: undefined,
+		id: undefined,
 	},
 	setAuthInformation: (value: AuthInformation) => {},
 });
@@ -21,6 +23,7 @@ export default function AuthContextProvider({ children }: PropsWithChildren) {
 		isAuthenticated: false,
 		email: undefined,
 		username: undefined,
+		id: undefined,
 	});
 
 	return (
