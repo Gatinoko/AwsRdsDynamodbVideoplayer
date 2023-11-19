@@ -11,8 +11,8 @@ export type CommentProps = {
 
 export default function Comment(props: CommentProps) {
 	return (
-		<li className='flex flex-col gap-2 bg-red-500 p-2 rounded-xl'>
-			<p>{props.username}</p>
+		<li className='flex flex-col gap-2 bg-gray-300 p-2 rounded-2xl'>
+			<h3 className='text-r font-semibold'>{props.username}</h3>
 			<Textarea
 				name='comment'
 				value={props.comment}
