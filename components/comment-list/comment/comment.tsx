@@ -1,7 +1,9 @@
 'use client';
 
 import { AuthContext } from '@/context/auth-context';
+import { deleteComment } from '@/server/actions/comment-actions';
 import { Button, Textarea } from '@nextui-org/react';
+import { useRouter } from 'next/navigation';
 import { useContext } from 'react';
 
 export type CommentProps = {
@@ -19,9 +21,15 @@ export default function Comment({
 	username,
 	videoId,
 }: CommentProps) {
+	// Router
+	const router = useRouter();
+
 	const { authInformation, setAuthInformation } = useContext(AuthContext);
 
-	async function deleteVideoButtonHandler() {}
+	async function deleteVideoButtonHandler(commentId: string) {
+		await deleteComment(commentId);
+		router.refresh();
+	}
 
 	// Checks whether the video item has the current authenticated user as its owner
 	function isCommentFromCurrentUser(commentUserId: string, authUserId: string) {
@@ -40,7 +48,7 @@ export default function Comment({
 				{isCommentFromCurrentUser(authInformation.id!, userId) && (
 					<Button
 						size='sm'
-						onClick={deleteVideoButtonHandler}
+						onClick={() => deleteVideoButtonHandler(commentId)}
 						color='danger'>
 						Delete
 					</Button>

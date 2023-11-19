@@ -35,7 +35,18 @@ export async function postComment(
 
 	// Zod form schema validation
 	postCommentSchema.parse(formValues);
+}
 
-	// Redirects user to login page
-	redirect('/my-videos');
+/**
+ * Server action for deleting a comment.
+ *
+ * @param {string} commentId - Id of the comment to be deleted.
+ */
+export async function deleteComment(commentId: string) {
+	// Deletes the comment with the specified id
+	await prismaClient().comment.delete({
+		where: {
+			commentId: commentId,
+		},
+	});
 }
