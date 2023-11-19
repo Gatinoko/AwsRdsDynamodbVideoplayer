@@ -47,6 +47,7 @@ export default function Navbar({ jwtToken }: NavigationProps) {
 		if (jwtToken)
 			setAuthInformation({
 				isAuthenticated: true,
+				id: jwtToken.id,
 				email: jwtToken.email,
 				username: jwtToken.username,
 			});
@@ -64,6 +65,11 @@ export default function Navbar({ jwtToken }: NavigationProps) {
 				className='flex gap-4'>
 				{jwtToken ? (
 					<>
+						{/* All videos link button */}
+						<Link href='/all-videos'>
+							<Button className='bg-transparent'>All Videos</Button>
+						</Link>
+
 						{/* Avatar with dropdown menu */}
 						<Dropdown placement='bottom-end'>
 							{/* Avatar */}
@@ -112,6 +118,7 @@ export default function Navbar({ jwtToken }: NavigationProps) {
 						{/* Sign-up page button */}
 						<NavbarItem>
 							<Button
+								className='bg-transparent'
 								as={Link}
 								href='/sign-up'
 								variant='flat'>
@@ -122,6 +129,7 @@ export default function Navbar({ jwtToken }: NavigationProps) {
 						{/* Login page button */}
 						<NavbarItem>
 							<Button
+								className='bg-transparent'
 								as={Link}
 								href='/login'
 								variant='flat'>
