@@ -55,8 +55,8 @@ export default function Navbar({ jwtToken }: NavigationProps) {
 	return (
 		<Navigation>
 			<NavbarBrand>
-				<div className='w-8 h-8 bg-green-400 rounded-md me-2'></div>
-				<p className='font-bold text-inherit'>Healthy Harvest</p>
+				<div className='w-8 h-8 bg-red-400 rounded-md me-2'></div>
+				<p className='font-bold text-inherit'>VideoTube</p>
 			</NavbarBrand>
 
 			<NavbarContent
@@ -64,18 +64,6 @@ export default function Navbar({ jwtToken }: NavigationProps) {
 				className='flex gap-4'>
 				{jwtToken ? (
 					<>
-						{/* Logout button */}
-						<NavbarItem
-							key='logout'
-							onClick={logoutButtonHandler}>
-							<Button
-								as={Link}
-								href='/upload-video'
-								variant='flat'>
-								Upload
-							</Button>
-						</NavbarItem>
-
 						{/* Avatar with dropdown menu */}
 						<Dropdown placement='bottom-end'>
 							{/* Avatar */}
@@ -108,6 +96,13 @@ export default function Navbar({ jwtToken }: NavigationProps) {
 									key='logout'
 									onClick={logoutButtonHandler}>
 									Log Out
+								</DropdownItem>
+
+								{/* My videos page button */}
+								<DropdownItem
+									key='myVideos'
+									href='/my-videos'>
+									My Videos
 								</DropdownItem>
 							</DropdownMenu>
 						</Dropdown>

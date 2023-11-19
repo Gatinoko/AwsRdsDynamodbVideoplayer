@@ -37,5 +37,5 @@ export async function postComment(
 	postCommentSchema.parse(formValues);
 
 	// Redirects user to login page
-	redirect('/upload-video');
+	redirect('/my-videos');
 }
