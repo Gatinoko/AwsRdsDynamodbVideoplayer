@@ -16,6 +16,7 @@ model User {
   email String @unique
   username String @unique
   password String
+
   videos Video[]
   comments Comment[]
   userVideoRatings VideoRating[]
@@ -23,17 +24,22 @@ model User {
 
 model VideoRating {
   ratingId String @id @default(uuid())
+
   videoId String @unique
-  video Video @relation(fields: [videoId], references: [videoId])
+  video Video @relation(fields: [videoId], references: [videoId], onDelete: Cascade)
+
   userId String
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   value Int
 }
 
 model Video {
   videoId String @id
+
   userId String
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   comments Comment[]
   videoRatings VideoRating[]
 }
@@ -41,8 +47,10 @@ model Video {
 model Comment {
   commentId String @id
   comment String
+
   userId String
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   videoId String
-  video Video @relation(fields: [videoId], references: [videoId])
+  video Video @relation(fields: [videoId], references: [videoId], onDelete: Cascade)
 }

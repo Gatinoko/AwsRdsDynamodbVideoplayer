@@ -104,6 +104,7 @@ export async function deleteVideo(videoId: string, userId: string) {
 	await prismaClient().video.delete({
 		where: {
 			videoId: videoId,
+			userId: userId,
 		},
 	});
 
