@@ -55,7 +55,7 @@ export default function VideoItem({
 	}
 
 	return (
-		<li className='bg-slate-200 p-4 rounded-2xl flex flex-col gap-2'>
+		<li className='bg-gray-200 p-4 rounded-2xl flex flex-col gap-2'>
 			{/* Video title & actions */}
 			<div className='flex gap-2 items-center'>
 				<Input
