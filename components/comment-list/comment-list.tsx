@@ -22,9 +22,6 @@ export type CommentListProps = {
 export default function CommentList({ videoComments }: CommentListProps) {
 	return (
 		<>
-			{/* Title */}
-			<h2 className='text-2xl font-semibold'>Comments</h2>
-
 			{/* List of comments */}
 			<ul className='flex flex-col gap-2'>
 				{videoComments?.map((comment, index) => (
@@ -32,6 +29,7 @@ export default function CommentList({ videoComments }: CommentListProps) {
 						key={index}
 						commentId={comment.commentId}
 						comment={comment.comment}
+						userId={comment.user.id}
 						username={comment.user.username}
 						videoId={comment.videoId}
 					/>

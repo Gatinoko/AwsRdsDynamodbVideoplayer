@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 export type VideoItemProps = {
 	videoId: string;
 	userId: string;
+	videoTitle: string;
 	videoComments: ({
 		user: {
 			id: string;
@@ -24,7 +25,12 @@ export type VideoItemProps = {
 		userId: string;
 		videoId: string;
 	})[];
-	videoTitle: string;
+	currentUser: {
+		id: string;
+		email: string;
+		username: string;
+		iat: number;
+	};
 	fileTitle: string;
 	fileSize: string;
 	source: string;
@@ -34,8 +40,9 @@ export default function VideoItem({
 	videoId,
 	userId,
 	videoTitle,
-	videoComments,
 	fileTitle,
+	videoComments,
+	currentUser,
 	fileSize,
 	source,
 }: VideoItemProps) {
@@ -50,55 +57,36 @@ export default function VideoItem({
 
 	// Post comment form handler function
 	async function commentButtonHandler(formData: FormData) {
-		await postComment(formData, videoId, userId);
+		await postComment(formData, videoId, currentUser.id);
 		router.refresh();
 	}
 
+	// Checks whether the video item has the current authenticated user as its owner
+	function isVideoFromCurrentUser(currentUser: {
+		id: string;
+		email: string;
+		username: string;
+		iat: number;
+	}) {
+		if (userId === currentUser.id) return true;
+		return false;
+	}
+
 	return (
-		<li className='bg-gray-200 p-4 rounded-2xl flex flex-col gap-2'>
+		<li className='bg-gray-200 p-4 rounded-2xl flex flex-col gap-4'>
 			{/* Video title & actions */}
-			<div className='flex gap-2 items-center'>
-				<Input
-					key='videoTitle'
-					type='text'
-					label='Video Title'
-					name='videoTitle'
-					value={videoTitle}
-					readOnly
-				/>
+			<div className='flex gap-2 items-center justify-between'>
+				<h1 className='text-3xl font-bold'>{videoTitle}</h1>
 
-				<Button onClick={deleteVideoButtonHandler}>Delete</Button>
-			</div>
-
-			{/* Video id */}
-			<Input
-				key='id'
-				type='text'
-				label='Video Id'
-				name='id'
-				value={videoId}
-				readOnly
-			/>
-
-			{/* File title & File Size */}
-			<div className='flex gap-2'>
-				<Input
-					key='fileTitle'
-					type='text'
-					label='File Title'
-					name='fileTitle'
-					value={fileTitle}
-					readOnly
-				/>
-
-				<Input
-					key='fileSize'
-					type='text'
-					label='File Size'
-					name='fileSize'
-					value={fileSize}
-					readOnly
-				/>
+				{/* Action items */}
+				{isVideoFromCurrentUser(currentUser) && (
+					<Button
+						onClick={deleteVideoButtonHandler}
+						size='sm'
+						color='danger'>
+						Delete
+					</Button>
+				)}
 			</div>
 
 			{/* Video HTML element */}
@@ -109,30 +97,70 @@ export default function VideoItem({
 				<source src={source} />
 			</video>
 
+			{/* File metadata information */}
+			<div className='flex flex-col gap-2'>
+				{/* Video id */}
+				<Input
+					key='id'
+					type='text'
+					label='Video Id'
+					name='id'
+					value={videoId}
+					readOnly
+				/>
+
+				{/* File title & File Size */}
+				<div className='flex gap-2'>
+					<Input
+						key='fileTitle'
+						type='text'
+						label='File Title'
+						name='fileTitle'
+						value={fileTitle}
+						readOnly
+					/>
+
+					<Input
+						key='fileSize'
+						type='text'
+						label='File Size'
+						name='fileSize'
+						value={fileSize}
+						readOnly
+					/>
+				</div>
+			</div>
+
 			{/* Rating slider */}
 			<RatingSlider
 				videoId={videoId}
 				userId={userId}
 			/>
 
-			{/* Comment form */}
-			<form
-				className='flex gap-2 items-center'
-				action={commentButtonHandler}>
-				{/* Comment box */}
-				<Textarea
-					label='Comment'
-					name='comment'
-					placeholder='Enter your description'
-					required
-				/>
+			{/* Comments */}
+			<div className='flex flex-col gap-4'>
+				{/* Title */}
+				<h2 className='text-2xl font-semibold'>Comments</h2>
 
-				{/* Button */}
-				<Button type='submit'>Comment</Button>
-			</form>
+				{/* Comment form */}
+				<form
+					className='flex gap-2 items-center'
+					action={commentButtonHandler}>
+					{/* Comment box */}
+					<Textarea
+						label='Comment'
+						name='comment'
+						placeholder='Enter your description'
+						required
+					/>
 
-			{/* Comment list */}
-			<CommentList videoComments={videoComments} />
+					{/* Button */}
+					<Button type='submit'>Comment</Button>
+				</form>
+
+				{/* Comment list */}
+				<CommentList videoComments={videoComments} />
+			</div>
 		</li>
 	);
 }

@@ -8,27 +8,37 @@ import { DB_CLIENT, TABLE_NAME } from '@/aws/aws-config';
 import { GetCommand } from '@aws-sdk/lib-dynamodb';
 import { createPresigned } from '@/aws/aws-utils';
 
-export type UserVideoListProps = {};
+export type UserVideoListProps = {
+	username?: string | undefined;
+};
 
-export default async function UserVideoList(props: UserVideoListProps) {
+export default async function UserVideoList({ username }: UserVideoListProps) {
 	// Decoded jwt token
 	const decodedJwtToken: any = jwt.decode(cookies().get('token')?.value!);
 
-	// Gets a user's uploaded video ids
-	const userVideos = (
-		await prismaClient().user.findUnique({
-			where: {
-				username: decodedJwtToken?.username,
-			},
-			include: {
-				videos: true,
-			},
-		})
-	)?.videos!;
+	// Videos array
+	let videos;
 
-	const userVideosWithSource = await (async () => {
-		let userVideosWithInformation = [];
-		for (const video of userVideos) {
+	// If a user is specified, only include the specified user video's, otherwise show all videos
+	if (username) {
+		// Gets a user's uploaded video ids
+		videos = (
+			await prismaClient().user.findUnique({
+				where: {
+					username: username,
+				},
+				include: {
+					videos: true,
+				},
+			})
+		)?.videos!;
+	} else {
+		videos = await prismaClient().video.findMany()!;
+	}
+
+	const userVideos = await (async () => {
+		let userVideos = [];
+		for (const video of videos) {
 			// Generates video's presigned URL
 			const presignedUrl = await createPresigned(video.videoId);
 
@@ -58,18 +68,36 @@ export default async function UserVideoList(props: UserVideoListProps) {
 				})
 			)?.comments!;
 
+			// Gets a video's author username from mySql
+			const videoAuthorUsername = (
+				await prismaClient().video.findUnique({
+					where: {
+						videoId: video.videoId,
+					},
+					include: {
+						user: true,
+					},
+				})
+			)?.user.username!;
+
 			// Pushes item to new array
-			userVideosWithInformation.push({
+			userVideos.push({
 				...video,
 				videoTitle: Item?.videoTitle,
 				videoComments: videoComments,
+				videoAuthorUsername: videoAuthorUsername,
 				fileTitle: Item?.fileTitle,
 				fileSize: Item?.fileSize,
 				source: presignedUrl,
 			});
 		}
-		return userVideosWithInformation;
+		return userVideos;
 	})();
 
-	return <VideoList userVideos={userVideosWithSource} />;
+	return (
+		<VideoList
+			userVideos={userVideos}
+			currentUser={decodedJwtToken}
+		/>
+	);
 }
