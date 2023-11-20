@@ -31,11 +31,18 @@ export type UserVideoListProps = {
 		username: string;
 		iat: number;
 	};
+	videoRatings: {
+		ratingId: string;
+		videoId: string;
+		userId: string;
+		value: number;
+	}[];
 };
 
 export default function VideoList({
 	userVideos,
 	currentUser,
+	videoRatings,
 }: UserVideoListProps) {
 	return (
 		<ul className='flex flex-col gap-2'>
@@ -50,6 +57,7 @@ export default function VideoList({
 					fileTitle={video.fileTitle}
 					fileSize={video.fileSize}
 					source={video.source}
+					videoRatings={videoRatings}
 				/>
 			))}
 		</ul>

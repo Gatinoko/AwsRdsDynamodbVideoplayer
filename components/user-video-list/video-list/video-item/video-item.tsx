@@ -25,6 +25,12 @@ export type VideoItemProps = {
 		userId: string;
 		videoId: string;
 	})[];
+	videoRatings: {
+		ratingId: string;
+		videoId: string;
+		userId: string;
+		value: number;
+	}[];
 	currentUser: {
 		id: string;
 		email: string;
@@ -42,6 +48,7 @@ export default function VideoItem({
 	videoTitle,
 	fileTitle,
 	videoComments,
+	videoRatings,
 	currentUser,
 	fileSize,
 	source,
@@ -72,10 +79,18 @@ export default function VideoItem({
 		return false;
 	}
 
+	//
+	function getVideoRating(videoId: string) {
+		return videoRatings.find((rating) => {
+			if (rating.videoId === videoId) return rating.value;
+		});
+	}
+
 	return (
 		<li className='bg-gray-200 p-4 rounded-2xl flex flex-col gap-4'>
 			{/* Video title & actions */}
 			<div className='flex gap-2 items-center justify-between'>
+				{/* Video title */}
 				<h1 className='text-3xl font-bold'>{videoTitle}</h1>
 
 				{/* Action items */}
@@ -135,6 +150,9 @@ export default function VideoItem({
 			<RatingSlider
 				videoId={videoId}
 				userId={userId}
+				defaultValue={
+					getVideoRating(videoId) ? getVideoRating(videoId)?.value! : 1
+				}
 			/>
 
 			{/* Comments */}

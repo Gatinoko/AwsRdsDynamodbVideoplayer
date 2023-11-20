@@ -7,10 +7,17 @@ import { useState } from 'react';
 export type RatingSliderProps = {
 	videoId: string;
 	userId: string;
+	defaultValue: number;
 };
 
-export default function RatingSlider({ videoId, userId }: RatingSliderProps) {
-	const [ratingValue, setRatingValue] = useState<number | number[]>(1);
+export default function RatingSlider({
+	videoId,
+	userId,
+	defaultValue,
+}: RatingSliderProps) {
+	const [ratingValue, setRatingValue] = useState<number | number[]>(
+		defaultValue
+	);
 
 	async function ratingSliderHandler(value: number | number[]) {
 		console.log('ass');

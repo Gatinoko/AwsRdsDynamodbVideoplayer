@@ -94,10 +94,13 @@ export default async function UserVideoList({ username }: UserVideoListProps) {
 		return userVideos;
 	})();
 
+	const videoRatings = await prismaClient().videoRating.findMany();
+
 	return (
 		<VideoList
 			userVideos={userVideos}
 			currentUser={decodedJwtToken}
+			videoRatings={videoRatings}
 		/>
 	);
 }
